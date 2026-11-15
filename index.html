@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blackwing — Plateforme éducative Maths &amp; Informatique</title>
+<meta name="theme-color" content="#09090b">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="Cours, vidéos et exercices de mathématiques et d'informatique pour chaque classe.">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebasedatabase.app wss://*.firebasedatabase.app; frame-src https://mega.nz https://mega.io https://drive.google.com https://docs.google.com https://www.youtube-nocookie.com https://*.firebaseapp.com https://*.web.app; object-src 'none'; base-uri 'none'; form-action 'self'">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#09090b; --surface:#111115; --surface-2:#18181d; --ink:#f4f4f5; --muted:#9a9aa7; --line:#26262e;
+  --primary:#e11d48; --primary-2:#fb7185; --primary-soft:rgba(225,29,72,.14);
+  --maths:#fbbf24; --maths-soft:rgba(251,191,36,.13); --info:#2dd4bf; --info-soft:rgba(45,212,191,.13);
+  --warn:#fbbf24; --warn-soft:rgba(251,191,36,.13); --danger:#fb7185; --danger-soft:rgba(244,63,94,.15); --ok:#4ade80; --ok-soft:rgba(74,222,128,.13);
+  --radius:16px; --shadow:0 1px 0 rgba(255,255,255,.03) inset,0 12px 34px rgba(0,0,0,.55);
+  --font:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
+body.lock{overflow:hidden}
+h1,h2,h3,h4{line-height:1.2;margin:0 0 .5em;letter-spacing:-.01em}
+p{margin:0 0 1em}
+a{color:var(--primary)}
+button{font:inherit;cursor:pointer}
+.wrap{width:min(1120px,100% - 40px);margin-inline:auto}
+svg.i{width:1.15em;height:1.15em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none;vertical-align:-.2em}
+
+/* Header */
+header.top{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.88);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:20px;min-height:66px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.2rem;color:var(--ink);text-decoration:none;background:none;border:0;padding:0}
+.brand .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--primary),#0ea5e9);display:grid;place-items:center;color:#fff}
+.brand b{color:var(--primary)}
+nav.main{display:flex;gap:4px;margin-left:12px}
+nav.main button{background:none;border:0;padding:8px 12px;border-radius:10px;color:var(--muted);font-weight:600}
+nav.main button:hover{background:var(--primary-soft);color:var(--primary)}
+.spacer{flex:1}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;font-weight:700;font-size:.9rem}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:10px 18px;border-radius:12px;font-weight:600;text-decoration:none;transition:.15s}
+.btn:hover{border-color:#c7cbe0;transform:translateY(-1px)}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 6px 16px rgba(67,56,202,.28)}
+.btn.primary:hover{background:#3730a3}
+.btn.ghost{background:transparent}
+.btn.sm{padding:6px 12px;font-size:.88rem;border-radius:10px}
+.btn[disabled]{opacity:.6;cursor:not-allowed;transform:none}
+:focus-visible{outline:3px solid #a5b4fc;outline-offset:2px}
+
+/* Hero */
+.hero{background:radial-gradient(1200px 500px at 85% -10%,#4f46e5 0,transparent 60%),linear-gradient(135deg,#0f172a,#1e1b4b 60%,#312e81);color:#fff;padding:72px 0 80px;position:relative;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center}
+.hero h1{font-size:clamp(2rem,4.4vw,3.2rem);font-weight:800}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#a5b4fc,#5eead4);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.lead{color:#c7d2fe;font-size:1.12rem;max-width:560px}
+.hero .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.hero .btn.ghost{color:#fff;border-color:rgba(255,255,255,.3)}
+.hero .btn.ghost:hover{background:rgba(255,255,255,.1)}
+.hero .btn.primary{background:#fff;color:var(--primary);border-color:#fff;box-shadow:none}
+.panel-art{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:22px;backdrop-filter:blur(6px);font-family:ui-monospace,Consolas,monospace;font-size:.95rem;color:#e0e7ff}
+.panel-art .row{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+.panel-art .dot{width:10px;height:10px;border-radius:50%;background:#f87171}
+.panel-art .dot:nth-child(2){background:#fbbf24}.panel-art .dot:nth-child(3){background:#34d399}
+.panel-art pre{margin:0;white-space:pre-wrap}
+.panel-art .m{color:#a5b4fc}.panel-art .k{color:#5eead4}.panel-art .c{color:#94a3b8}
+
+/* Sections */
+section.block{padding:56px 0}
+.sec-head{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.sec-head h2{font-size:1.7rem;margin:0}
+.sec-head p{margin:4px 0 0;color:var(--muted)}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;position:relative}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--primary-soft);color:var(--primary)}
+.badge.maths{background:var(--maths-soft);color:var(--maths)} .badge.info{background:var(--info-soft);color:var(--info)}
+.badge.warn{background:var(--warn-soft);color:var(--warn)} .badge.danger{background:var(--danger-soft);color:var(--danger)} .badge.ok{background:var(--ok-soft);color:var(--ok)}
+.badge.gray{background:#eef0f5;color:#475569}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+
+/* Annonces */
+.annonce{display:flex;flex-direction:column;gap:8px}
+.annonce.pinned{border-color:#c7d2fe;background:linear-gradient(180deg,#fafaff,#fff)}
+.annonce h3{font-size:1.08rem;margin:0}
+.annonce .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.annonce .txt{white-space:pre-wrap;color:#334155;margin:0}
+
+/* Ressources */
+.toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;color:#475569;border-radius:999px;padding:7px 14px;font-weight:600;font-size:.9rem}
+.chip[aria-pressed="true"]{background:var(--primary);color:#fff;border-color:var(--primary)}
+.search{position:relative;flex:1;min-width:220px;max-width:360px}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.search input{width:100%;padding:10px 12px 10px 38px;border:1px solid var(--line);border-radius:12px;font:inherit;background:#fff}
+.res{display:flex;flex-direction:column;gap:10px;padding-top:0;overflow:hidden}
+.res .band{height:6px;margin:0 -22px 14px;background:var(--primary-2)}
+.res.maths .band{background:var(--maths)} .res.info .band{background:var(--info)}
+.res .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.res h3{font-size:1.05rem;margin:4px 0 0}
+.res p{color:var(--muted);margin:0;flex:1;font-size:.95rem}
+.res .foot{margin-top:6px}
+.empty{padding:36px;text-align:center;color:var(--muted);border:2px dashed var(--line);border-radius:var(--radius);background:#fff}
+
+/* Steps */
+.steps{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.step .n{width:38px;height:38px;border-radius:12px;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;font-weight:800;margin-bottom:12px}
+footer.foot{border-top:1px solid var(--line);background:#fff;padding:26px 0;color:var(--muted);font-size:.9rem;margin-top:30px}
+footer.foot .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+/* Login */
+.auth{min-height:calc(100vh - 66px);display:grid;place-items:center;padding:40px 20px;background:radial-gradient(900px 400px at 10% 0,#e0e7ff,transparent),var(--bg)}
+.auth .card{width:min(440px,100%);padding:34px}
+.field{margin-bottom:16px}
+.field label{display:block;font-weight:600;font-size:.9rem;margin-bottom:6px}
+.field input[type=email],.field input[type=password],.field input[type=text]{width:100%;padding:12px 14px;border:1px solid #cdd2e3;border-radius:12px;font:inherit;background:#fff}
+.field input:focus{outline:3px solid #c7d2fe;border-color:var(--primary-2)}
+.check{display:flex;gap:8px;align-items:center;font-size:.92rem;color:#475569}
+.alert{padding:12px 14px;border-radius:12px;font-size:.92rem;margin-bottom:16px}
+.alert.err{background:var(--danger-soft);color:var(--danger)} .alert.ok{background:var(--ok-soft);color:var(--ok)} .alert.warn{background:var(--warn-soft);color:var(--warn)}
+.linkbtn{background:none;border:0;color:var(--primary);font-weight:600;padding:0;text-decoration:underline}
+
+/* Dashboard */
+.page{padding:36px 0 20px}
+.welcome{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:26px}
+.welcome h1{font-size:1.8rem;margin:0 0 4px}
+.subj-grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-bottom:34px}
+.subj{border:0;text-align:left;color:#fff;border-radius:20px;padding:26px;min-height:210px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow);transition:.18s;position:relative;overflow:hidden}
+.subj:hover{transform:translateY(-3px)}
+.subj.maths{background:linear-gradient(135deg,#4338ca,#6366f1)} .subj.info{background:linear-gradient(135deg,#0f766e,#14b8a6)}
+.subj .ic{width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:1.4rem}
+.subj h2{margin:6px 0 0;font-size:1.45rem} .subj p{margin:0;opacity:.9}
+.subj .stats{margin-top:auto;display:flex;gap:16px;font-size:.92rem;font-weight:600;flex-wrap:wrap}
+.bar{height:8px;border-radius:99px;background:rgba(255,255,255,.28);overflow:hidden}
+.bar i{display:block;height:100%;background:#fff;border-radius:99px}
+.crumb{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin:18px 0 20px;overflow:auto}
+.tabs button{background:none;border:0;padding:12px 18px;font-weight:700;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--primary);border-bottom-color:var(--primary)}
+.chap{margin:26px 0 10px;font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800}
+.item{display:flex;gap:14px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;transition:.15s}
+.item:hover{border-color:#c7cbe0;box-shadow:var(--shadow)}
+.item .num{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:800;background:var(--primary-soft);color:var(--primary);flex:none}
+.item.seen .num{background:var(--ok-soft);color:var(--ok)}
+.item .body{flex:1;min-width:0}
+.item .body h4{margin:0 0 2px;font-size:1rem}
+.item .body p{margin:0;color:var(--muted);font-size:.9rem}
+.item .tags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.layout{display:grid;grid-template-columns:1fr 320px;gap:26px;align-items:start}
+.side h3{font-size:1.05rem}
+.mini{padding:14px 0;border-bottom:1px solid var(--line)} .mini:last-child{border:0}
+.mini b{display:block;font-size:.95rem}
+
+/* Viewer */
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.62);z-index:60;display:grid;place-items:start center;padding:24px 14px;overflow:auto}
+.viewer{background:#fff;width:min(980px,100%);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.35);overflow:hidden}
+.viewer header{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--line)}
+.viewer header h3{margin:0 0 2px;font-size:1.25rem}
+.viewer .vbody{padding:22px 24px 26px}
+.vblock{margin-bottom:26px}
+.vblock h4{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.frame{width:100%;border:1px solid var(--line);border-radius:14px;background:#0f172a;display:block}
+.frame.video{aspect-ratio:16/9}
+.frame.pdf{height:min(78vh,820px);min-height:460px;background:#f1f5f9}
+.enonce{white-space:pre-wrap;background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:16px}
+.vfoot{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:12px 18px;border-radius:12px;z-index:80;box-shadow:var(--shadow);font-weight:600}
+.spin{width:34px;height:34px;border:4px solid #dfe3f3;border-top-color:var(--primary);border-radius:50%;animation:sp .8s linear infinite;margin:60px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+.center{text-align:center}
+@media(max-width:860px){
+  .hero .wrap{grid-template-columns:1fr} .panel-art{display:none}
+  .layout{grid-template-columns:1fr}
+  nav.main{display:none}
+  .item{flex-wrap:wrap}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+.offres{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px}
+.offre{flex:0 0 min(420px,86%);scroll-snap-align:start;position:relative;border-radius:16px;overflow:hidden;background:#e2e8f0;aspect-ratio:16/9;display:block;box-shadow:0 6px 20px rgba(15,23,42,.12)}
+.offre img{width:100%;height:100%;object-fit:cover;display:block}
+.offre .cap{position:absolute;left:0;right:0;bottom:0;padding:28px 14px 12px;color:#fff;font-weight:700;background:linear-gradient(transparent,rgba(15,23,42,.8))}
+.cls-block{margin-top:26px}
+.cls-title{display:flex;align-items:center;gap:8px;margin:0 0 12px;font-size:1.2rem}
+
+/* ===== Thème Blackwing : obsidienne, braise & or ===== */
+::selection{background:var(--primary);color:#fff}
+a{color:var(--primary-2)}
+input,button{color:inherit}
+input::placeholder{color:#6b6b78}
+:focus-visible{outline:3px solid rgba(251,113,133,.55);outline-offset:2px}
+body{background:radial-gradient(900px 500px at 100% -5%,rgba(225,29,72,.07),transparent 60%),var(--bg)}
+header.top{background:rgba(9,9,11,.78);border-bottom:1px solid var(--line)}
+.brand{font-weight:800;letter-spacing:.01em}
+.brand .wordmark{text-transform:uppercase;letter-spacing:.14em;font-size:1.02rem;font-weight:800}
+.brand .wordmark b{color:var(--primary-2);font-weight:300}
+.brand .logo{background:linear-gradient(135deg,#e11d48,#7f1d1d);box-shadow:0 0 0 1px rgba(255,255,255,.1) inset,0 6px 22px rgba(225,29,72,.45)}
+nav.main button:hover{background:var(--primary-soft);color:var(--primary-2)}
+.avatar{background:var(--primary-soft);color:var(--primary-2);border:1px solid rgba(251,113,133,.25)}
+.btn{background:var(--surface-2);border-color:var(--line);color:var(--ink)}
+.btn:hover{border-color:#43434f;background:#1e1e25}
+.btn.primary{background:linear-gradient(135deg,#e11d48,#be123c);border-color:#e11d48;color:#fff;box-shadow:0 8px 24px rgba(225,29,72,.35)}
+.btn.primary:hover{background:linear-gradient(135deg,#f43f5e,#e11d48);border-color:#f43f5e}
+.btn.ghost{background:transparent}
+.linkbtn{color:var(--primary-2)}
+
+.hero{background:
+  radial-gradient(900px 480px at 88% -10%,rgba(225,29,72,.38),transparent 62%),
+  radial-gradient(600px 380px at 0% 105%,rgba(251,191,36,.10),transparent 60%),
+  linear-gradient(160deg,#050507,#0c0c10 60%,#160509);
+  border-bottom:1px solid var(--line)}
+.hero::before{content:"";position:absolute;right:-80px;top:-30px;width:640px;height:640px;opacity:.07;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='.35' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 19c7.5 0 12.5-3.8 15.5-11.5L21.5 3c.4 8-1.8 14-8 17.2-3.7 1.8-8.2 1.2-11-1.2z'/%3E%3Cpath d='M8 16.5l7.5-7.5M5.5 18.2l7-9.2'/%3E%3C/svg%3E") no-repeat center/contain}
+.hero .wrap{position:relative}
+.hero h1 em{background:linear-gradient(90deg,#fb7185,#fbbf24);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.lead{color:#a1a1aa}
+.hero .btn.primary{background:linear-gradient(135deg,#e11d48,#be123c);color:#fff;border-color:#e11d48;box-shadow:0 8px 24px rgba(225,29,72,.4)}
+.hero .btn.ghost{background:transparent;border-color:rgba(255,255,255,.22);color:#fff}
+.hero .btn.ghost:hover{background:rgba(255,255,255,.07)}
+.panel-art{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.1);color:#d4d4d8}
+.panel-art .m{color:#fbbf24}.panel-art .k{color:#fb7185}.panel-art .c{color:#71717a}
+
+.card{background:linear-gradient(180deg,#14141a,#101014);border-color:var(--line)}
+.badge.gray{background:rgba(255,255,255,.07);color:#c4c4cc}
+.annonce.pinned{border-color:rgba(251,113,133,.4);background:linear-gradient(180deg,#1b0d12,#101014)}
+.annonce .txt{color:#c4c4cc}
+.chip{background:var(--surface-2);color:#c4c4cc;border-color:var(--line)}
+.chip:hover{border-color:#43434f}
+.chip[aria-pressed="true"]{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 4px 16px rgba(225,29,72,.35)}
+.search input,.field input[type=email],.field input[type=password],.field input[type=text]{background:#0d0d11;border-color:#2e2e38;color:var(--ink)}
+.field input:focus{outline:3px solid rgba(251,113,133,.35);border-color:var(--primary-2)}
+.check{color:#a1a1aa}
+.empty{background:var(--surface);border-color:#2e2e38}
+.res:hover{border-color:#3a3a46}
+footer.foot{background:#070709;border-top:1px solid var(--line)}
+.auth{background:radial-gradient(800px 420px at 12% 0,rgba(225,29,72,.20),transparent),radial-gradient(500px 300px at 95% 100%,rgba(251,191,36,.08),transparent),var(--bg)}
+
+.subj{border:1px solid rgba(255,255,255,.08)}
+.subj.maths{background:radial-gradient(400px 200px at 100% 0,rgba(251,191,36,.28),transparent 70%),linear-gradient(135deg,#1c1407,#3a2606)}
+.subj.info{background:radial-gradient(400px 200px at 100% 0,rgba(45,212,191,.28),transparent 70%),linear-gradient(135deg,#06201d,#0a3a35)}
+.subj:hover{border-color:rgba(255,255,255,.22)}
+.subj .ic{background:rgba(255,255,255,.1)}
+.bar{background:rgba(255,255,255,.14)}
+.item{background:var(--surface);border-color:var(--line)}
+.item:hover{border-color:#3a3a46}
+.tabs button[aria-selected="true"]{color:var(--primary-2);border-bottom-color:var(--primary)}
+
+.overlay{background:rgba(0,0,0,.78);backdrop-filter:blur(4px)}
+.viewer{background:var(--surface);border:1px solid var(--line)}
+.frame{background:#000}
+.frame.pdf{background:#0b0b0e}
+.enonce{background:#0d0d11;color:#d4d4d8}
+.toast{background:var(--surface-2);border:1px solid #3a3a46;color:var(--ink)}
+.spin{border-color:#2a2a33;border-top-color:var(--primary-2)}
+.offre{background:var(--surface-2);border:1px solid var(--line)}
+.offre .cap{background:linear-gradient(transparent,rgba(0,0,0,.88))}
+
+/* ===== Cartes d'offres ===== */
+.offres{padding:4px 2px 12px}
+.offre{flex:0 0 min(430px,88%);aspect-ratio:16/10;min-height:240px;color:#fff;text-decoration:none;border:1px solid var(--line);
+  background:radial-gradient(420px 240px at 100% 0,rgba(225,29,72,.45),transparent 70%),radial-gradient(300px 200px at 0 100%,rgba(251,191,36,.14),transparent 70%),linear-gradient(135deg,#1a0a10,#0b0b0f);
+  transition:transform .18s,border-color .18s,box-shadow .18s}
+a.offre:hover{transform:translateY(-4px);border-color:rgba(251,113,133,.55);box-shadow:0 18px 40px rgba(225,29,72,.22)}
+.offre img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.offre .shade{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(0,0,0,.55) 0,rgba(0,0,0,.2) 38%,rgba(0,0,0,.92) 100%)}
+.offre .in{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:space-between;gap:10px;padding:16px 18px}
+.o-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.o-badge,.o-pill{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:5px 11px;border-radius:999px;backdrop-filter:blur(6px)}
+.o-badge{background:rgba(225,29,72,.85);color:#fff}
+.o-pill{background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.22);color:#fff}
+.o-mid h3{margin:0 0 4px;font-size:1.3rem;line-height:1.2;text-shadow:0 2px 12px rgba(0,0,0,.6);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.o-mid p{margin:0;font-size:.9rem;color:#e4e4e7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 1px 8px rgba(0,0,0,.7)}
+.o-bot{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.o-price{display:flex;align-items:baseline;gap:6px}
+.o-price b{font-size:2.2rem;font-weight:800;line-height:1;text-shadow:0 2px 14px rgba(0,0,0,.6)}
+.o-price span{font-size:1rem;font-weight:800;color:#fbbf24}
+.o-cta{display:inline-flex;align-items:center;gap:6px;background:#25d366;color:#04210f;font-weight:800;font-size:.88rem;padding:8px 14px;border-radius:999px;white-space:nowrap}
+</style>
+</head>
+<body>
+<noscript><p style="padding:24px;font-family:sans-serif">JavaScript est requis pour utiliser cette plateforme.</p></noscript>
+<div id="root"></div>
+
+<script type="module">
+/* =====================================================================
+   1) CONFIGURATION FIREBASE  —  à remplacer par VOS valeurs
+      (Console Firebase > Paramètres du projet > Vos applications > Web)
+   ===================================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyAMInzeNYzjlmiz8OKJg6O_yrJCpGG3DrY",
+  authDomain: "blackwing-5f863.firebaseapp.com",
+  databaseURL: "https://blackwing-5f863-default-rtdb.firebaseio.com",
+  projectId: "blackwing-5f863",
+  storageBucket: "blackwing-5f863.firebasestorage.app",
+  messagingSenderId: "275834601563",
+  appId: "1:275834601563:web:dcb8a347bc2a6aeb34bf7e"
+};
+const SITE_NAME = "Blackwing";
+const WHATSAPP = "21628070403"; // 28 070 403 (Tunisie, indicatif +216)
+const waLink = t => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(t)}`;
+const IDLE_MINUTES = 30; // déconnexion automatique après inactivité
+
+const FB = "https://www.gstatic.com/firebasejs/10.14.1/";
+let initializeApp, initializeAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail,
+    setPersistence, indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence;
+
+const CONFIGURED = !/^VOTRE_/.test(firebaseConfig.apiKey);
+let auth = null;
+
+/* =====================================================================
+   2) OUTILS (DOM sûr : jamais d'innerHTML avec des données Firebase)
+   ===================================================================== */
+const root = document.getElementById("root");
+
+function h(tag, props, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v == null || v === false) continue;
+    if (k === "class") el.className = v;
+    else if (k.startsWith("on") && typeof v === "function") el.addEventListener(k.slice(2).toLowerCase(), v);
+    else el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const c of kids.flat(Infinity)) {
+    if (c == null || c === false) continue;
+    el.append(c.nodeType ? c : document.createTextNode(String(c)));
+  }
+  return el;
+}
+
+const ICONS = {
+  sigma:'<path d="M18 7V4H6l6 8-6 8h12v-3"/>',
+  code:'<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+  video:'<polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>',
+  file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>',
+  check:'<polyline points="20 6 9 17 4 12"/>',
+  x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  out:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>',
+  mega:'<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/>',
+  search:'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  ext:'<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
+  pin:'<path d="M12 17v5"/><path d="M9 10.76V6h6v4.76l2 3.24H7z"/>',
+  back:'<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
+  pen:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  link:'<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+  wing:'<path d="M2.5 19c7.5 0 12.5-3.8 15.5-11.5L21.5 3c.4 8-1.8 14-8 17.2-3.7 1.8-8.2 1.2-11-1.2z"/><path d="M8 16.5l7.5-7.5"/><path d="M5.5 18.2l7-9.2"/>',
+  wa:'<path d="M3 21l1.7-5A8.5 8.5 0 1 1 8 19.3z"/><path d="M9 9.5c.3 2.2 2.8 4.7 5 5l1.3-1.3-2-1-.8.7c-.8-.4-1.6-1.2-2-2l.7-.8-1-2z"/>',
+  cap:'<path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/>',
+  lock:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>'
+};
+function ico(name) {
+  const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("class", "i"); s.setAttribute("aria-hidden", "true");
+  s.innerHTML = ICONS[name] || ""; // constantes statiques uniquement
+  return s;
+}
+const iconLabel = (name, text) => h("span", { style: "display:inline-flex;align-items:center;gap:8px" }, ico(name), text);
+
+function toast(msg) {
+  document.querySelector(".toast")?.remove();
+  const t = h("div", { class: "toast", role: "status" }, msg);
+  document.body.append(t); setTimeout(() => t.remove(), 3500);
+}
+const toDate = v => v ? (v.toDate ? v.toDate() : new Date(v)) : null;
+const fmtDate = v => { const d = toDate(v); return d && !isNaN(d) ? d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : ""; };
+const normMat = v => { v = String(v || "").toLowerCase(); return v.startsWith("math") ? "maths" : v.startsWith("info") ? "info" : (v || "general"); };
+const byOrder = (a, b) => (a.ordre ?? 9999) - (b.ordre ?? 9999) || String(a.titre || "").localeCompare(String(b.titre || ""), "fr", { numeric: true });
+const initials = n => String(n || "?").trim().split(/\s+/).slice(0, 2).map(s => s[0]?.toUpperCase()).join("") || "?";
+
+const SUBJECTS = {
+  maths: { label: "Mathématiques", icon: "sigma", blurb: "Algèbre, analyse, géométrie, probabilités…" },
+  info:  { label: "Informatique",  icon: "code",  blurb: "Algorithmique, programmation, bases de données…" }
+};
+
+/* ---------- Liens : validation stricte + conversion Drive/YouTube ---------- */
+function parseHttps(u) { try { const x = new URL(String(u || "").trim()); return x.protocol === "https:" ? x : null; } catch { return null; } }
+const ID_RE = /^[\w-]{5,}$/;
+function embedUrl(u) {
+  const x = parseHttps(u); if (!x) return null;
+  const host = x.hostname.replace(/^www\./, "");
+  if (host === "drive.google.com") {
+    const id = (x.pathname.match(/\/file\/d\/([\w-]+)/) || [])[1] || x.searchParams.get("id");
+    return id && ID_RE.test(id) ? `https://drive.google.com/file/d/${id}/preview` : null;
+  }
+  if (host === "docs.google.com") {
+    const m = x.pathname.match(/^\/(document|presentation|spreadsheets)\/d\/([\w-]+)/);
+    return m ? `https://docs.google.com/${m[1]}/d/${m[2]}/preview` : null;
+  }
+  if (host === "mega.nz" || host === "mega.io") {
+    const m = x.pathname.match(/^\/file\/([\w-]+)$/);
+    return m && /^#[\w-]+$/.test(x.hash) ? `https://mega.nz/embed/${m[1]}${x.hash}` : null;
+  }
+  let vid = null;
+  if (host === "youtu.be") vid = x.pathname.slice(1);
+  else if (host === "youtube.com" || host === "m.youtube.com") vid = x.searchParams.get("v") || (x.pathname.match(/\/(embed|shorts)\/([\w-]+)/) || [])[2];
+  return vid && ID_RE.test(vid) ? `https://www.youtube-nocookie.com/embed/${vid}` : null;
+}
+const openHref = u => parseHttps(u)?.href || null;
+const extLink = (href, ...kids) => h("a", { class: "btn sm", href, target: "_blank", rel: "noopener noreferrer" }, ...kids);
+
+/* ---------- Progression locale (par élève, sur cet appareil) ---------- */
+const seenKey = () => `blackwing:vu:${state.user?.uid || "anon"}`;
+function seenSet() { try { return new Set(JSON.parse(localStorage.getItem(seenKey()) || localStorage.getItem(seenKey().replace("blackwing:", "eduplus:")) || "[]")); } catch { return new Set(); } }
+const isSeen = k => seenSet().has(k);
+function setSeen(k, on) { try { const s = seenSet(); on ? s.add(k) : s.delete(k); localStorage.setItem(seenKey(), JSON.stringify([...s])); } catch {} }
+
+/* =====================================================================
+   3) ÉTAT
+   ===================================================================== */
+const state = {
+  ready: false, user: null, profile: null, classe: null, cours: [], exercices: [], unpaid: false,
+  loadingStudent: false, studentErr: null,
+  pub: { offres: null, gratuits: null, classes: [], errO: null, errG: null },
+  filter: { m: "all", q: "" }, loginErr: "", loginInfo: "", fails: 0, lockUntil: 0
+};
+
+/* =====================================================================
+   4) DONNÉES
+   ===================================================================== */
+/* Offres affichées uniquement si la base n'en contient aucune (mettre [] pour désactiver) */
+const DEFAULT_OFFRES = [
+  { id: "info-acc-bac-sc", titre: "Info accélérée — Bac Scientifique", badge: "Bac Scientifique", seances: 15, prix: 150, devise: "DT",
+    description: "Le programme d'informatique du Bac Sc en version accélérée.", ordre: 1 }
+];
+const prettyClass = id => String(id || "").replace(/[-_]+/g, " ").trim();
+const isObj = v => v && typeof v === "object";
+const toList = o => isObj(o) ? Object.entries(o).filter(([, v]) => isObj(v)).map(([id, v]) => ({ id, ...v })) : [];
+const byNom = (a, b) => (a.ordre ?? 9999) - (b.ordre ?? 9999) || String(a.nom || a.id).localeCompare(String(b.nom || b.id), "fr", { numeric: true });
+
+/* Lecture de la base via l'API REST (plus fiable que le SDK : pas de WebSocket / long-polling,
+   et un délai maximum garantit que le chargement ne reste jamais bloqué). */
+async function dbGet(path, authed = false, ms = 15000) {
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), ms);
+  try {
+    let url = `${firebaseConfig.databaseURL.replace(/\/$/, "")}/${path}.json`;
+    if (authed) {
+      if (!auth?.currentUser) throw new Error("NO_AUTH");
+      url += `?auth=${encodeURIComponent(await auth.currentUser.getIdToken())}`;
+    }
+    const r = await fetch(url, { signal: ctl.signal, cache: "no-store" });
+    if (r.status === 401 || r.status === 403) throw new Error("PERMISSION");
+    if (!r.ok) throw new Error("HTTP_" + r.status);
+    return await r.json();
+  } catch (e) {
+    if (e.name === "AbortError") throw new Error("TIMEOUT");
+    throw e;
+  } finally { clearTimeout(t); }
+}
+const dbErrMsg = e => e?.message === "PERMISSION" ? "Accès refusé par la base de données : vérifiez les règles Firebase (lecture publique de offres, gratuits et classes)."
+  : e?.message === "TIMEOUT" ? "Le serveur met trop de temps à répondre. Vérifiez votre connexion puis réessayez."
+  : "Impossible de charger le contenu pour le moment.";
+
+/* gratuits : accepte  gratuits/{classeId}/{id}  OU  une liste plate  gratuits/{n} avec champ classeId */
+const isItem = v => isObj(v) && ("titre" in v || "pdfUrl" in v || "videoUrl" in v);
+function parseGratuits(val) {
+  const out = [];
+  if (isObj(val)) Object.entries(val).forEach(([k, v]) => {
+    if (!isObj(v)) return;
+    if (isItem(v)) out.push({ ...v, id: k, classeId: v.classeId || "general" });
+    else Object.entries(v).forEach(([id, it]) => { if (isObj(it)) out.push({ ...it, id, classeId: it.classeId || k }); });
+  });
+  return out.map(x => ({ ...x, matiere: normMat(x.matiere) })).filter(x => x.publie !== false).sort(byOrder);
+}
+function parseClasses(val) {
+  if (!isObj(val)) return [];
+  return Object.entries(val).filter(([, v]) => v != null)
+    .map(([id, v]) => typeof v === "string" ? { id, nom: v } : isObj(v) ? { id, ...v } : null).filter(Boolean).sort(byNom);
+}
+
+async function loadPublic() {
+  const [o, g, c] = await Promise.allSettled([dbGet("offres"), dbGet("gratuits"), dbGet("classes")]);
+  [o, g, c].forEach(r => r.status === "rejected" && console.error("[Blackwing] lecture publique :", r.reason));
+  state.pub.errO = o.status === "rejected" ? dbErrMsg(o.reason) : null;
+  state.pub.errG = g.status === "rejected" ? dbErrMsg(g.reason) : null;
+  state.pub.offres = o.status === "fulfilled" ? toList(o.value).filter(x => x.publie !== false && (x.titre || parseHttps(x.imageUrl))).sort(byOrder) : [];
+  if (!state.pub.offres.length && !state.pub.errO) state.pub.offres = DEFAULT_OFFRES.map(x => ({ ...x }));
+  state.pub.classes = c.status === "fulfilled" ? parseClasses(c.value) : [];
+  state.pub.gratuits = g.status === "fulfilled" ? parseGratuits(g.value) : [];
+  if (isHome()) render();
+}
+function retryPublic() { state.pub.offres = null; state.pub.gratuits = null; state.pub.errO = state.pub.errG = null; render(); loadPublic(); }
+const pubError = msg => h("div", { class: "empty" }, h("p", { style: "margin:0 0 12px" }, msg), h("button", { class: "btn sm primary", onclick: retryPublic }, "Réessayer"));
+
+async function loadStudent() {
+  state.loadingStudent = true; state.studentErr = null; state.unpaid = false; render();
+  try {
+    const uid = state.user.uid;
+    const us = await dbGet(`users/${encodeURIComponent(uid)}`, true);
+    if (!isObj(us)) throw new Error("NO_PROFILE");
+    state.profile = { id: uid, ...us };
+    if (state.profile.actif === false) throw new Error("DISABLED");
+    const cid = state.profile.classeId;
+    if (!cid) throw new Error("NO_CLASS");
+    let cl = null; try { cl = await dbGet(`classes/${encodeURIComponent(cid)}`, true); } catch {}
+    state.classe = typeof cl === "string" ? { id: cid, nom: cl } : isObj(cl) ? { id: cid, ...cl } : { id: cid, nom: prettyClass(cid) };
+    state.cours = []; state.exercices = [];
+    if (state.profile.paiement !== "paye") { state.unpaid = true; }
+    else {
+      const [cs, ex] = await Promise.all([dbGet(`cours/${encodeURIComponent(cid)}`, true), dbGet(`exercices/${encodeURIComponent(cid)}`, true)]);
+      const prep = x => ({ ...x, matiere: normMat(x.matiere) });
+      state.cours = toList(cs).map(prep).filter(x => x.publie !== false).sort(byOrder);
+      state.exercices = toList(ex).map(prep).filter(x => x.publie !== false).sort(byOrder);
+    }
+  } catch (e) {
+    console.error(e);
+    state.studentErr = e.message === "NO_PROFILE" ? "Votre compte n'est pas encore activé : aucun profil élève n'est associé à cet e-mail. Contactez l'administration."
+      : e.message === "NO_CLASS" ? "Aucune classe n'est associée à votre compte. Contactez l'administration."
+      : e.message === "DISABLED" ? "Votre accès est suspendu. Contactez l'administration."
+      : e.message === "PERMISSION" ? "Accès refusé par la base de données. Contactez l'administration."
+      : e.message === "TIMEOUT" ? "Le serveur met trop de temps à répondre. Vérifiez votre connexion puis réessayez."
+      : "Impossible de charger vos cours. Vérifiez votre connexion ou contactez l'administration.";
+  }
+  state.loadingStudent = false; render();
+}
+const classSubjects = () => (Array.isArray(state.classe?.matieres) && state.classe.matieres.length
+  ? state.classe.matieres.map(normMat) : ["maths", "info"]).filter(m => SUBJECTS[m]);
+
+/* =====================================================================
+   5) ROUTAGE
+   ===================================================================== */
+const parts = () => location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+const isHome = () => parts().length === 0;
+const go = p => { location.hash = p; };
+
+function render() {
+  if (!CONFIGURED) return renderSetup();
+  if (!state.ready) { root.replaceChildren(h("div", { class: "spin", role: "progressbar", "aria-label": "Chargement" })); return; }
+  const p = parts();
+  if (p[0] === "espace" && !state.user) return go("#/connexion");
+  if (p[0] === "connexion" && state.user) return go("#/espace");
+  let view;
+  if (p[0] === "connexion") view = viewLogin();
+  else if (p[0] === "espace") view = viewStudent(p);
+  else view = viewHome();
+  root.replaceChildren(headerEl(), view, footerEl());
+  if (p[0] !== "espace" || !p[1]) window.scrollTo({ top: 0 });
+}
+
+function goSection(id) {
+  if (!isHome()) go("#/");
+  setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }), 80);
+}
+
+/* =====================================================================
+   6) COMPOSANTS COMMUNS
+   ===================================================================== */
+function headerEl() {
+  const right = state.user
+    ? [h("button", { class: "btn sm primary", onclick: () => go("#/espace") }, iconLabel("cap", "Mon espace")),
+       h("span", { class: "avatar", title: state.profile?.nom || state.user.email }, initials(`${state.profile?.prenom || ""} ${state.profile?.nom || state.user.email}`)),
+       h("button", { class: "btn sm ghost", onclick: logout, "aria-label": "Se déconnecter" }, ico("out"))]
+    : [h("button", { class: "btn primary", onclick: () => go("#/connexion") }, iconLabel("lock", "Espace élève"))];
+  return h("header", { class: "top" }, h("div", { class: "wrap" },
+    h("button", { class: "brand", onclick: () => go("#/") }, h("span", { class: "logo" }, ico("wing")), h("span", { class: "wordmark" }, "Black", h("b", null, "wing"))),
+    h("nav", { class: "main", "aria-label": "Navigation" },
+      h("button", { onclick: () => goSection("accueil") }, "Accueil"),
+      h("button", { onclick: () => goSection("offres") }, "Offres"),
+      h("button", { onclick: () => goSection("gratuits") }, "Cours gratuits")),
+    h("div", { class: "spacer" }), ...right));
+}
+const footerEl = () => h("footer", { class: "foot" }, h("div", { class: "wrap" },
+  h("span", null, `© ${new Date().getFullYear()} ${SITE_NAME} — Maths & Informatique`),
+  h("span", null, "Accès élèves sur compte fourni par l'établissement")));
+
+async function logout() { await signOut(auth); state.profile = null; state.classe = null; state.cours = []; state.exercices = []; state.unpaid = false; go("#/"); toast("Vous êtes déconnecté."); }
+
+/* =====================================================================
+   7) ACCUEIL PUBLIC
+   ===================================================================== */
+function viewHome() {
+  const hero = h("section", { class: "hero", id: "accueil" }, h("div", { class: "wrap" },
+    h("div", null,
+      h("span", { class: "badge", style: "background:rgba(255,255,255,.08);color:#e4e4e7;border:1px solid rgba(255,255,255,.14);margin-bottom:16px" }, ico("wing"), "Maths · Informatique"),
+      h("h1", null, "Apprenez à votre rythme, ", h("em", null, "prenez votre envol.")),
+      h("p", { class: "lead" }, "Cours en vidéo, documents PDF et exercices corrigés, organisés par classe. Connectez-vous avec votre compte élève ou explorez gratuitement nos ressources publiques."),
+      h("div", { class: "cta" },
+        h("button", { class: "btn primary", onclick: () => go(state.user ? "#/espace" : "#/connexion") }, iconLabel("cap", state.user ? "Accéder à mon espace" : "Accéder à mon espace élève")),
+        h("button", { class: "btn ghost", onclick: () => goSection("gratuits") }, "Cours gratuits"))),
+    h("div", { class: "panel-art", "aria-hidden": "true" },
+      h("div", { class: "row" }, h("i", { class: "dot" }), h("i", { class: "dot" }), h("i", { class: "dot" })),
+      h("pre", null, "f(x) = x² − 4x + 3\nf'(x) = 2x − 4  →  x = 2\n\n", "def somme(n):\n    return n*(n+1)//2\n\n", "print(somme(10))  # 55"))));
+
+  const off = h("section", { class: "block wrap", id: "offres" },
+    h("div", { class: "sec-head" }, h("div", null, h("h2", null, "Nos offres"), h("p", null, "Les offres en cours, à ne pas manquer."))),
+    offresUI());
+
+  const res = h("section", { class: "block wrap", id: "gratuits", style: "padding-top:20px" },
+    h("div", { class: "sec-head" }, h("div", null, h("h2", null, "Cours gratuits"), h("p", null, "Cours de Maths et d'Informatique, classés par classe, ouverts à tous sans connexion."))),
+    gratuitsUI());
+
+  const how = h("section", { class: "block wrap", style: "padding-top:10px" },
+    h("div", { class: "sec-head" }, h("h2", null, "Comment ça marche ?")),
+    h("div", { class: "steps" },
+      ...[["1", "Connectez-vous", "Utilisez l'e-mail et le mot de passe fournis par votre établissement."],
+          ["2", "Votre classe, vos matières", "Vous accédez automatiquement aux cours de Maths et d'Info de votre classe."],
+          ["3", "Étudiez et progressez", "Regardez les vidéos, lisez les PDF, entraînez-vous avec les exercices et suivez votre avancement."]]
+        .map(([n, t, d]) => h("div", { class: "card step" }, h("div", { class: "n" }, n), h("h3", null, t), h("p", { class: "muted", style: "margin:0" }, d)))));
+  return h("main", null, hero, off, res, how);
+}
+
+const hasPrice0 = o => o.prix !== undefined && o.prix !== null && o.prix !== "";
+function offresUI() {
+  const list = state.pub.offres;
+  if (!list) return h("div", { class: "spin" });
+  if (!list.length) return state.pub.errO ? pubError(state.pub.errO) : h("div", { class: "empty" }, "Aucune offre pour le moment.");
+  return h("div", { class: "offres", role: "list" }, list.map(o => {
+    const href = waLink(`Bonjour, je souhaite m'inscrire à l'offre : ${o.titre || "Blackwing"}${o.seances ? ` (${o.seances} séances)` : ""}${hasPrice0(o) ? ` — ${o.prix} ${o.devise || "DT"}` : ""}.`), img = parseHttps(o.imageUrl);
+    const hasPrice = o.prix !== undefined && o.prix !== null && o.prix !== "";
+    const prix = hasPrice ? (isNaN(Number(o.prix)) ? String(o.prix) : Number(o.prix).toLocaleString("fr-FR")) : "";
+    const imgEl = img ? h("img", { src: img.href, alt: "", loading: "lazy", referrerpolicy: "no-referrer" }) : null;
+    imgEl?.addEventListener("error", () => imgEl.remove());
+    const kids = [imgEl, h("span", { class: "shade" }),
+      h("div", { class: "in" },
+        h("div", { class: "o-top" },
+          o.badge ? h("span", { class: "o-badge" }, ico("wing"), o.badge) : h("span"),
+          o.seances ? h("span", { class: "o-pill" }, ico("cap"), `${o.seances} séances`) : null),
+        h("div", { class: "o-mid" },
+          o.titre ? h("h3", null, o.titre) : null,
+          o.description ? h("p", null, o.description) : null),
+        h("div", { class: "o-bot" },
+          hasPrice ? h("div", { class: "o-price" }, h("b", null, prix), h("span", null, o.devise || "DT")) : h("span"),
+          h("span", { class: "o-cta" }, ico("wa"), "S'inscrire sur WhatsApp")))];
+    return h("a", { class: "offre", role: "listitem", href, target: "_blank", rel: "noopener noreferrer", "aria-label": `S'inscrire via WhatsApp : ${o.titre || "offre"}` }, ...kids);
+  }));
+}
+
+function gratuitsUI() {
+  const box = h("div", { "aria-live": "polite" });
+  const chip = (v, l) => h("button", { class: "chip", "aria-pressed": String(state.filter.m === v), onclick: e => {
+    state.filter.m = v; e.target.parentElement.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", "false")); e.target.setAttribute("aria-pressed", "true"); fill(); } }, l);
+  const input = h("input", { type: "search", placeholder: "Rechercher un cours…", "aria-label": "Rechercher", value: state.filter.q,
+    oninput: e => { state.filter.q = e.target.value; fill(); } });
+  const list = h("div");
+  function media(kind, url, title, sub) {
+    const emb = embedUrl(url), href = openHref(url); if (!href) return null;
+    const lbl = kind === "video" ? "Regarder" : "Lire le PDF";
+    return emb ? h("button", { class: "btn sm primary", onclick: () => openViewer({ title, sub, blocks: [{ kind, url }] }) }, iconLabel(kind === "video" ? "video" : "file", lbl))
+               : extLink(href, lbl + " ", ico("ext"));
+  }
+  function fill() {
+    list.replaceChildren();
+    const all = state.pub.gratuits; if (!all) return list.append(h("div", { class: "spin" }));
+    const q = state.filter.q.trim().toLowerCase();
+    const rows = all.filter(r => (state.filter.m === "all" || r.matiere === state.filter.m) && (!q || `${r.titre} ${r.description}`.toLowerCase().includes(q)));
+    if (!rows.length) return list.append(state.pub.errG && !all.length ? pubError(state.pub.errG) : h("div", { class: "empty" }, all.length ? "Aucun cours gratuit ne correspond." : "Aucun cours gratuit pour le moment."));
+    const known = new Set(state.pub.classes.map(c => c.id));
+    const classes = [...state.pub.classes, ...[...new Set(rows.map(r => r.classeId))].filter(id => !known.has(id)).map(id => ({ id, nom: prettyClass(id) }))];
+    classes.forEach(c => {
+      const items = rows.filter(r => r.classeId === c.id); if (!items.length) return;
+      list.append(h("div", { class: "cls-block" }, h("h3", { class: "cls-title" }, ico("cap"), c.nom || prettyClass(c.id)),
+        h("div", { class: "grid" }, items.map(r => {
+          const m = r.matiere;
+          return h("article", { class: `card res ${m}` }, h("div", { class: "band" }),
+            h("div", { class: "top" }, h("span", { class: "badge " + (SUBJECTS[m] ? m : "gray") }, SUBJECTS[m]?.short || SUBJECTS[m]?.label || "Général")),
+            h("h3", null, r.titre || "Cours"), h("p", null, r.description || ""),
+            h("div", { class: "foot" }, media("video", r.videoUrl, r.titre, r.description), media("pdf", r.pdfUrl, r.titre, r.description)));
+        }))));
+    });
+  }
+  box.append(h("div", { class: "toolbar" },
+    h("div", { class: "chips" }, chip("all", "Tout"), chip("maths", "Maths"), chip("info", "Informatique")),
+    h("div", { class: "search" }, ico("search"), input)), list);
+  fill(); return box;
+}
+
+/* =====================================================================
+   8) CONNEXION
+   ===================================================================== */
+function viewLogin() {
+  const email = h("input", { id: "em", type: "email", autocomplete: "username", required: true, placeholder: "prenom.nom@exemple.com" });
+  const pass = h("input", { id: "pw", type: "password", autocomplete: "current-password", required: true, placeholder: "••••••••" });
+  const remember = h("input", { type: "checkbox", id: "rm" });
+  const msg = h("div"); const btn = h("button", { class: "btn primary", type: "submit", style: "width:100%" }, "Se connecter");
+  const show = (cls, t) => msg.replaceChildren(t ? h("div", { class: "alert " + cls, role: "alert" }, t) : "");
+  if (state.loginErr) show("err", state.loginErr);
+
+  const form = h("form", { novalidate: true, onsubmit: async e => {
+    e.preventDefault();
+    const now = Date.now(); if (now < state.lockUntil) return show("warn", `Trop de tentatives. Réessayez dans ${Math.ceil((state.lockUntil - now) / 1000)} s.`);
+    if (!email.value.trim() || !pass.value) return show("err", "Saisissez votre e-mail et votre mot de passe.");
+    if (!auth) return show("err", "Service de connexion indisponible. Rechargez la page.");
+    btn.disabled = true; btn.textContent = "Connexion…"; show("", "");
+    try {
+      await setPersistence(auth, remember.checked ? browserLocalPersistence : browserSessionPersistence);
+      await signInWithEmailAndPassword(auth, email.value.trim(), pass.value);
+      state.fails = 0;
+    } catch (err) {
+      state.fails++; if (state.fails >= 5) { state.lockUntil = Date.now() + 30000; state.fails = 0; }
+      const c = err.code || "";
+      show("err", c === "auth/too-many-requests" ? "Trop de tentatives. Patientez quelques minutes avant de réessayer."
+        : c === "auth/network-request-failed" ? "Connexion réseau indisponible."
+        : c === "auth/user-disabled" ? "Ce compte est désactivé. Contactez l'administration."
+        : "E-mail ou mot de passe incorrect.");
+      btn.disabled = false; btn.textContent = "Se connecter"; pass.value = "";
+    }
+  } },
+    h("div", { class: "field" }, h("label", { for: "em" }, "Adresse e-mail"), email),
+    h("div", { class: "field" }, h("label", { for: "pw" }, "Mot de passe"), pass),
+    h("div", { class: "field", style: "display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap" },
+      h("label", { class: "check", for: "rm", style: "margin:0;font-weight:400" }, remember, "Rester connecté"),
+      h("button", { type: "button", class: "linkbtn", onclick: async () => {
+        if (!email.value.trim()) return show("warn", "Saisissez d'abord votre e-mail ci-dessus.");
+        try { await sendPasswordResetEmail(auth, email.value.trim()); } catch {}
+        show("ok", "Si un compte existe pour cette adresse, un e-mail de réinitialisation vient d'être envoyé.");
+      } }, "Mot de passe oublié ?")),
+    msg, btn);
+
+  return h("main", { class: "auth" }, h("div", { class: "card" },
+    h("div", { class: "center", style: "margin-bottom:18px" },
+      h("span", { class: "badge" }, ico("lock"), "Espace élève"), h("h1", { style: "font-size:1.6rem;margin:12px 0 4px" }, "Connexion"),
+      h("p", { class: "muted small", style: "margin:0" }, "Utilisez les identifiants fournis par votre établissement.")),
+    form,
+    h("p", { class: "muted small center", style: "margin:18px 0 0" }, "Pas de compte ? Les comptes sont créés par l'administration."),
+    h("p", { class: "center", style: "margin:8px 0 0" }, h("button", { class: "linkbtn", onclick: () => go("#/") }, "← Retour à l'accueil"))));
+}
+
+/* =====================================================================
+   9) ESPACE ÉLÈVE
+   ===================================================================== */
+function viewStudent(p) {
+  if (state.loadingStudent || (!state.profile && !state.studentErr)) return h("main", { class: "page wrap" }, h("div", { class: "spin" }));
+  if (state.studentErr) return h("main", { class: "page wrap" }, h("div", { class: "card", style: "max-width:600px;margin:40px auto" },
+    h("div", { class: "alert err" }, state.studentErr),
+    h("div", { style: "display:flex;gap:10px;flex-wrap:wrap" }, h("button", { class: "btn", onclick: loadStudent }, "Réessayer"), h("button", { class: "btn ghost", onclick: logout }, "Se déconnecter"))));
+  const subj = p[1];
+  if (subj && classSubjects().includes(subj)) return viewSubject(subj, p[2] === "exercices" ? "exercices" : "cours");
+  return viewDashboard();
+}
+
+function countFor(m) {
+  const c = state.cours.filter(x => x.matiere === m), e = state.exercices.filter(x => x.matiere === m), s = seenSet();
+  const done = c.filter(x => s.has("cours:" + x.id)).length + e.filter(x => s.has("exercices:" + x.id)).length;
+  const total = c.length + e.length; return { c: c.length, e: e.length, total, pct: total ? Math.round(done / total * 100) : 0 };
+}
+
+function viewDashboard() {
+  const name = [state.profile.prenom, state.profile.nom].filter(Boolean).join(" ") || state.user.email;
+  const cards = classSubjects().map(m => {
+    const S = SUBJECTS[m], n = countFor(m);
+    return h("button", { class: `subj ${m}`, onclick: () => go(`#/espace/${m}/cours`), "aria-label": `Ouvrir ${S.label}` },
+      h("span", { class: "ic" }, ico(S.icon)), h("h2", null, S.label), h("p", null, S.blurb),
+      h("div", { class: "stats" }, h("span", null, `${n.c} cours`), h("span", null, `${n.e} exercices`), h("span", null, `${n.pct}% terminé`)),
+      h("div", { class: "bar", role: "progressbar", "aria-valuenow": n.pct, "aria-valuemin": 0, "aria-valuemax": 100 }, h("i", { style: `width:${n.pct}%` })));
+  });
+  return h("main", { class: "page wrap" },
+    h("div", { class: "welcome" },
+      h("div", null, h("h1", null, `Bonjour, ${name} 👋`), h("p", { class: "muted", style: "margin:0" }, "Voici vos matières. Choisissez-en une pour commencer.")),
+      h("span", { class: "badge" }, ico("cap"), state.classe?.nom || state.profile.classeId)),
+    h("div", { class: "layout" },
+      h("div", null, state.unpaid ? h("div", { class: "alert err" }, "Votre paiement n'est pas encore confirmé : les cours et exercices de votre classe seront débloqués dès sa validation par l'administration. En attendant, les cours gratuits restent accessibles.")
+        : cards.length ? h("div", { class: "subj-grid", style: "margin:0" }, cards) : h("div", { class: "empty" }, "Aucune matière n'est configurée pour votre classe.")),
+      h("aside", { class: "card side" }, h("h3", null, iconLabel("mega", "Mon compte")),
+        h("div", { class: "mini" }, h("b", null, "Classe"), h("span", { class: "muted small" }, state.classe?.nom || state.profile.classeId)),
+        h("div", { class: "mini" }, h("b", null, "Paiement"), h("span", { class: "badge " + (state.unpaid ? "danger" : "ok") }, state.unpaid ? "En attente" : "Payé")),
+        h("button", { class: "btn sm", style: "margin-top:12px", onclick: () => goSection("gratuits") }, "Cours gratuits"))));
+}
+
+function viewSubject(m, tab) {
+  const S = SUBJECTS[m];
+  const items = (tab === "cours" ? state.cours : state.exercices).filter(x => x.matiere === m);
+  const nC = state.cours.filter(x => x.matiere === m).length, nE = state.exercices.filter(x => x.matiere === m).length;
+  const list = h("div", { "aria-live": "polite" });
+  const search = h("input", { type: "search", placeholder: "Rechercher dans cette matière…", "aria-label": "Rechercher", oninput: () => fill() });
+
+  function fill() {
+    const q = search.value.trim().toLowerCase(); list.replaceChildren();
+    const rows = items.filter(x => !q || `${x.titre} ${x.description} ${x.chapitre}`.toLowerCase().includes(q));
+    if (!rows.length) return list.append(h("div", { class: "empty" }, items.length ? "Aucun résultat." : `Aucun ${tab === "cours" ? "cours" : "exercice"} disponible pour le moment.`));
+    let last = null, idx = 0;
+    rows.forEach(x => {
+      const ch = x.chapitre || "Général"; if (ch !== last) { list.append(h("div", { class: "chap" }, ch)); last = ch; }
+      idx++; const key = `${tab}:${x.id}`, seen = isSeen(key);
+      const diff = { facile: "ok", moyen: "warn", difficile: "danger" }[String(x.difficulte || "").toLowerCase()];
+      const row = h("div", { class: "item" + (seen ? " seen" : "") },
+        h("div", { class: "num" }, seen ? ico("check") : String(idx)),
+        h("div", { class: "body" }, h("h4", null, x.titre || "Sans titre"), x.description ? h("p", null, x.description) : null,
+          h("div", { class: "tags" },
+            x.videoUrl ? h("span", { class: "badge" }, ico("video"), "Vidéo") : null,
+            x.pdfUrl ? h("span", { class: "badge gray" }, ico("file"), "PDF") : null,
+            x.correctionUrl ? h("span", { class: "badge ok" }, ico("check"), "Corrigé") : null,
+            diff ? h("span", { class: "badge " + diff }, x.difficulte) : null)),
+        h("button", { class: "btn sm primary", onclick: () => openItem(tab, x, () => fill()) }, "Ouvrir"));
+      list.append(row);
+    });
+  }
+  fill();
+
+  const tabBtn = (t, label, n) => h("button", { role: "tab", "aria-selected": String(tab === t), onclick: () => go(`#/espace/${m}/${t}`) }, `${label} (${n})`);
+  return h("main", { class: "page wrap" },
+    h("div", { class: "crumb" }, h("button", { class: "btn sm ghost", onclick: () => go("#/espace") }, ico("back"), "Mes matières"),
+      h("span", { class: "badge " + m }, state.classe?.nom || state.profile.classeId)),
+    h("div", { style: "display:flex;gap:14px;align-items:center" },
+      h("span", { class: `badge ${m}`, style: "padding:12px;border-radius:14px;font-size:1.3rem" }, ico(S.icon)),
+      h("div", null, h("h1", { style: "margin:0;font-size:1.7rem" }, S.label), h("p", { class: "muted", style: "margin:0" }, S.blurb))),
+    h("div", { class: "tabs", role: "tablist" }, tabBtn("cours", "Cours", nC), tabBtn("exercices", "Exercices", nE)),
+    h("div", { class: "toolbar" }, h("div", { class: "search", style: "max-width:420px" }, ico("search"), search)),
+    list);
+}
+
+function openItem(tab, x, refresh) {
+  const key = `${tab}:${x.id}`, blocks = [];
+  if (tab === "exercices" && x.enonce) blocks.push({ kind: "text", label: "Énoncé", text: x.enonce });
+  if (x.videoUrl) blocks.push({ kind: "video", url: x.videoUrl });
+  if (x.pdfUrl) blocks.push({ kind: "pdf", url: x.pdfUrl, label: tab === "exercices" ? "Sujet (PDF)" : "Support de cours (PDF)" });
+  if (x.correctionUrl) blocks.push({ kind: "correction", url: x.correctionUrl });
+  if (!blocks.length) blocks.push({ kind: "text", label: "Contenu", text: "Aucun média n'est associé à cet élément pour le moment." });
+  openViewer({ title: x.titre, sub: x.description, blocks, seenKey: key, onSeen: refresh });
+}
+
+/* =====================================================================
+   10) LECTEUR (vidéo Drive/YouTube, PDF Drive)
+   ===================================================================== */
+let lastFocus = null;
+function closeViewer() { document.querySelector(".overlay")?.remove(); document.body.classList.remove("lock"); lastFocus?.focus?.(); }
+
+function frameFor(kind, url) {
+  const emb = embedUrl(url), href = openHref(url);
+  if (!href) return h("div", { class: "alert err" }, "Lien invalide ou non sécurisé.");
+  if (!emb) return h("div", { class: "alert warn" }, "Ce lien ne peut pas être affiché ici. ", extLink(href, "Ouvrir dans un nouvel onglet ", ico("ext")));
+  return h("div", null,
+    h("iframe", { class: "frame " + (kind === "video" ? "video" : "pdf"), src: emb, loading: "lazy", title: kind === "video" ? "Lecteur vidéo" : "Document PDF",
+      allow: "autoplay; fullscreen; picture-in-picture", allowfullscreen: true, referrerpolicy: "no-referrer",
+      sandbox: "allow-scripts allow-same-origin allow-popups allow-presentation allow-forms" }),
+    h("p", { class: "muted small", style: "margin:8px 0 0" }, "Le document ne s'affiche pas ? ", h("a", { href, target: "_blank", rel: "noopener noreferrer" }, "Ouvrir dans un nouvel onglet")));
+}
+
+function openViewer({ title, sub, blocks, seenKey: sk, onSeen }) {
+  closeViewer(); lastFocus = document.activeElement;
+  const body = h("div", { class: "vbody" });
+  blocks.forEach(b => {
+    if (b.kind === "text") body.append(h("div", { class: "vblock" }, h("h4", null, ico("pen"), b.label || "Texte"), h("div", { class: "enonce" }, b.text)));
+    else if (b.kind === "video") body.append(h("div", { class: "vblock" }, h("h4", null, ico("video"), b.label || "Vidéo du cours"), frameFor("video", b.url)));
+    else if (b.kind === "pdf") body.append(h("div", { class: "vblock" }, h("h4", null, ico("file"), b.label || "Document PDF"), frameFor("pdf", b.url)));
+    else if (b.kind === "correction") {
+      const slot = h("div"); const btn = h("button", { class: "btn", onclick: () => { btn.remove(); slot.append(frameFor("pdf", b.url)); } }, iconLabel("check", "Afficher le corrigé"));
+      body.append(h("div", { class: "vblock" }, h("h4", null, ico("check"), "Corrigé"), btn, slot));
+    }
+  });
+  if (sk) {
+    const mk = h("button", { class: "btn" });
+    const paint = () => { mk.replaceChildren(iconLabel("check", isSeen(sk) ? "Marqué comme terminé ✓" : "Marquer comme terminé")); };
+    mk.addEventListener("click", () => { setSeen(sk, !isSeen(sk)); paint(); onSeen?.(); });
+    paint(); body.append(h("div", { class: "vfoot" }, mk));
+  }
+  const ov = h("div", { class: "overlay", onclick: e => { if (e.target === ov) closeViewer(); } },
+    h("div", { class: "viewer", role: "dialog", "aria-modal": "true", "aria-label": title || "Lecteur" },
+      h("header", null, h("div", null, h("h3", null, title || ""), sub ? h("p", { class: "muted small", style: "margin:0" }, sub) : null),
+        h("button", { class: "btn sm", onclick: closeViewer, "aria-label": "Fermer" }, ico("x"))), body));
+  document.body.append(ov); document.body.classList.add("lock"); ov.querySelector("button.btn")?.focus();
+}
+addEventListener("keydown", e => { if (e.key === "Escape") closeViewer(); });
+
+/* =====================================================================
+   11) ÉCRAN DE CONFIGURATION (si Firebase n'est pas encore renseigné)
+   ===================================================================== */
+function renderSetup() {
+  root.replaceChildren(h("main", { class: "auth" }, h("div", { class: "card", style: "width:min(620px,100%)" },
+    h("span", { class: "badge warn" }, "Configuration requise"), h("h1", { style: "font-size:1.5rem;margin:12px 0" }, "Connectez votre projet Firebase"),
+    h("p", { class: "muted" }, "Ouvrez ce fichier dans un éditeur et remplacez l'objet ", h("code", null, "firebaseConfig"), " (au début du bloc <script>) par les valeurs de votre projet."),
+    h("ol", { class: "muted" }, h("li", null, "Console Firebase → Paramètres du projet → Vos applications → Web (</>)"),
+      h("li", null, "Copiez la configuration affichée"), h("li", null, "Collez-la dans index.html puis rechargez la page")),
+    h("p", { class: "small muted" }, "Le guide complet est dans README.md."))));
+}
+
+/* =====================================================================
+   12) DÉMARRAGE
+   ===================================================================== */
+let idle;
+function bumpIdle() {
+  clearTimeout(idle);
+  if (state.user) idle = setTimeout(async () => { await signOut(auth); toast("Session expirée pour cause d'inactivité."); go("#/connexion"); }, IDLE_MINUTES * 60000);
+}
+["click", "keydown", "touchstart", "scroll"].forEach(ev => addEventListener(ev, bumpIdle, { passive: true }));
+
+async function start() {
+  if (!CONFIGURED) return render();
+  addEventListener("hashchange", render);
+  loadPublic();                                   // contenu public : REST, indépendant du SDK
+  setTimeout(() => { if (!state.ready) { state.ready = true; render(); } }, 3500); // ne jamais rester bloqué
+  try {
+    const [a, b] = await Promise.all([import(FB + "firebase-app.js"), import(FB + "firebase-auth.js")]);
+    ({ initializeApp } = a);
+    ({ initializeAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, setPersistence,
+       indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence } = b);
+    const app = initializeApp(firebaseConfig);
+    // initializeAuth sans resolver popup/redirect : évite le chargement de apis.google.com (bloqué par la CSP)
+    auth = initializeAuth(app, { persistence: [indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence] });
+    onAuthStateChanged(auth, async u => {
+      state.user = u; state.ready = true; bumpIdle();
+      if (u) { await loadStudent(); if (parts()[0] === "connexion") go("#/espace"); }
+      else { state.profile = state.classe = null; state.cours = []; state.exercices = []; state.unpaid = false; render(); }
+    });
+  } catch (e) {
+    console.error(e);
+    state.ready = true; render();
+    toast("Service de connexion indisponible. Rechargez la page.");
+  }
+}
+start();
+</script>
+</body>
+</html>
