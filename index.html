@@ -163,6 +163,9 @@ footer.foot .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:
 .viewer .vbody{padding:22px 24px 26px}
 .vblock{margin-bottom:26px}
 .vblock h4{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.meet{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-radius:14px;background:var(--primary-soft);border:1px solid var(--line,rgba(0,0,0,.08))}
+.meet .when{font-weight:700;text-transform:capitalize}
+.meet .when small{display:block;font-weight:500;text-transform:none;opacity:.8}
 .frame{width:100%;border:1px solid var(--line);border-radius:14px;background:#0f172a;display:block}
 .frame.video{aspect-ratio:16/9}
 .frame.pdf{height:min(78vh,820px);min-height:460px;background:#f1f5f9}
@@ -399,6 +402,43 @@ function embedUrl(u) {
   return vid && ID_RE.test(vid) ? `https://www.youtube-nocookie.com/embed/${vid}` : null;
 }
 const openHref = u => parseHttps(u)?.href || null;
+
+/* ---------- Plusieurs PDF / vidéos par cours (rétro-compatible) ----------
+   Ancien format conservé : pdfUrl / videoUrl (un seul lien).
+   Nouveau format : pdfs / videos = liste de liens OU de { titre, url } (tableau ou objet Firebase). */
+function mediaList(single, multi) {
+  const out = [];
+  const push = v => {
+    const url = typeof v === "string" ? v : (v && typeof v === "object" ? v.url : "");
+    if (!url || out.some(o => o.url === url)) return;
+    out.push({ url, titre: (v && typeof v === "object" && v.titre) || "" });
+  };
+  push(single);
+  if (Array.isArray(multi)) multi.forEach(push);
+  else if (multi && typeof multi === "object") Object.entries(multi)
+    .sort((a, b) => String(a[0]).localeCompare(String(b[0]), "fr", { numeric: true })).forEach(([, v]) => push(v));
+  return out;
+}
+const videosOf = x => mediaList(x.videoUrl, x.videos);
+const pdfsOf = x => mediaList(x.pdfUrl, x.pdfs);
+
+/* ---------- Séance Google Meet : meetUrl + meetDate (AAAA-MM-JJ) + meetHeure (HH:MM) [+ meetFin] ---------- */
+function meetOf(x) {
+  const m = x.meet && typeof x.meet === "object" ? x.meet : {};
+  const raw = x.meetUrl || m.url || (typeof x.meet === "string" ? x.meet : "");
+  const u = parseHttps(raw);
+  if (!u || u.hostname.replace(/^www\./, "") !== "meet.google.com") return null;
+  const date = x.meetDate || m.date || "", heure = x.meetHeure || m.heure || "", fin = x.meetFin || m.fin || "";
+  const start = date ? new Date(`${date}T${/^\d{1,2}:\d{2}$/.test(heure) ? heure.padStart(5, "0") : "00:00"}`) : null;
+  const okStart = start && !isNaN(start) ? start : null;
+  let end = null;
+  if (okStart) { end = /^\d{1,2}:\d{2}$/.test(fin) ? new Date(`${date}T${fin.padStart(5, "0")}`) : new Date(okStart.getTime() + 2 * 3600e3); if (isNaN(end)) end = new Date(okStart.getTime() + 2 * 3600e3); }
+  const now = Date.now();
+  const status = !okStart ? "unknown" : now < okStart ? "soon" : now <= end ? "live" : "past";
+  const dateTxt = okStart ? okStart.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) : "";
+  const timeTxt = heure ? (fin ? `${heure} – ${fin}` : heure) : "";
+  return { href: u.href, start: okStart, status, dateTxt, timeTxt };
+}
 const extLink = (href, ...kids) => h("a", { class: "btn sm", href, target: "_blank", rel: "noopener noreferrer" }, ...kids);
 
 /* ---------- Progression locale (par élève, sur cet appareil) ---------- */
@@ -454,7 +494,7 @@ const dbErrMsg = e => e?.message === "PERMISSION" ? "Accès refusé par la base 
   : "Impossible de charger le contenu pour le moment.";
 
 /* gratuits : accepte  gratuits/{classeId}/{id}  OU  une liste plate  gratuits/{n} avec champ classeId */
-const isItem = v => isObj(v) && ("titre" in v || "pdfUrl" in v || "videoUrl" in v);
+const isItem = v => isObj(v) && ("titre" in v || "pdfUrl" in v || "videoUrl" in v || "pdfs" in v || "videos" in v);
 function parseGratuits(val) {
   const out = [];
   if (isObj(val)) Object.entries(val).forEach(([k, v]) => {
@@ -634,9 +674,9 @@ function gratuitsUI() {
   const input = h("input", { type: "search", placeholder: "Rechercher un cours…", "aria-label": "Rechercher", value: state.filter.q,
     oninput: e => { state.filter.q = e.target.value; fill(); } });
   const list = h("div");
-  function media(kind, url, title, sub) {
+  function media(kind, url, title, sub, name) {
     const emb = embedUrl(url), href = openHref(url); if (!href) return null;
-    const lbl = kind === "video" ? "Regarder" : "Lire le PDF";
+    const lbl = name || (kind === "video" ? "Regarder" : "Lire le PDF");
     return emb ? h("button", { class: "btn sm primary", onclick: () => openViewer({ title, sub, blocks: [{ kind, url }] }) }, iconLabel(kind === "video" ? "video" : "file", lbl))
                : extLink(href, lbl + " ", ico("ext"));
   }
@@ -656,7 +696,9 @@ function gratuitsUI() {
           return h("article", { class: `card res ${m}` }, h("div", { class: "band" }),
             h("div", { class: "top" }, h("span", { class: "badge " + (SUBJECTS[m] ? m : "gray") }, SUBJECTS[m]?.short || SUBJECTS[m]?.label || "Général")),
             h("h3", null, r.titre || "Cours"), h("p", null, r.description || ""),
-            h("div", { class: "foot" }, media("video", r.videoUrl, r.titre, r.description), media("pdf", r.pdfUrl, r.titre, r.description)));
+            h("div", { class: "foot", style: "flex-wrap:wrap" },
+              videosOf(r).map((v, i, a) => media("video", v.url, v.titre || r.titre, r.description, v.titre || (a.length > 1 ? `Vidéo ${i + 1}` : ""))),
+              pdfsOf(r).map((p, i, a) => media("pdf", p.url, p.titre || r.titre, r.description, p.titre || (a.length > 1 ? `PDF ${i + 1}` : "")))));
         }))));
     });
   }
@@ -778,8 +820,11 @@ function viewSubject(m, tab) {
         h("div", { class: "num" }, seen ? ico("check") : String(idx)),
         h("div", { class: "body" }, h("h4", null, x.titre || "Sans titre"), x.description ? h("p", null, x.description) : null,
           h("div", { class: "tags" },
-            x.videoUrl ? h("span", { class: "badge" }, ico("video"), "Vidéo") : null,
-            x.pdfUrl ? h("span", { class: "badge gray" }, ico("file"), "PDF") : null,
+            (() => { const n = videosOf(x).length; return n ? h("span", { class: "badge" }, ico("video"), n > 1 ? `${n} vidéos` : "Vidéo") : null; })(),
+            (() => { const n = pdfsOf(x).length; return n ? h("span", { class: "badge gray" }, ico("file"), n > 1 ? `${n} PDF` : "PDF") : null; })(),
+            (() => { const mt = meetOf(x); if (!mt || mt.status === "past") return null;
+              return h("span", { class: "badge " + (mt.status === "live" ? "danger" : "warn") }, ico("mega"),
+                mt.status === "live" ? "Live en cours" : mt.start ? `Live ${mt.start.toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}${mt.timeTxt ? " · " + mt.timeTxt.split(" ")[0] : ""}` : "Live Meet"); })(),
             x.correctionUrl ? h("span", { class: "badge ok" }, ico("check"), "Corrigé") : null,
             diff ? h("span", { class: "badge " + diff }, x.difficulte) : null)),
         h("button", { class: "btn sm primary", onclick: () => openItem(tab, x, () => fill()) }, "Ouvrir"));
@@ -803,8 +848,11 @@ function viewSubject(m, tab) {
 function openItem(tab, x, refresh) {
   const key = `${tab}:${x.id}`, blocks = [];
   if (tab === "exercices" && x.enonce) blocks.push({ kind: "text", label: "Énoncé", text: x.enonce });
-  if (x.videoUrl) blocks.push({ kind: "video", url: x.videoUrl });
-  if (x.pdfUrl) blocks.push({ kind: "pdf", url: x.pdfUrl, label: tab === "exercices" ? "Sujet (PDF)" : "Support de cours (PDF)" });
+  const mt = meetOf(x); if (mt) blocks.unshift({ kind: "meet", meet: mt });
+  const vids = videosOf(x), pdfs = pdfsOf(x);
+  vids.forEach((v, i) => blocks.push({ kind: "video", url: v.url, label: v.titre || (vids.length > 1 ? `Vidéo ${i + 1}/${vids.length}` : undefined) }));
+  const pdfBase = tab === "exercices" ? "Sujet (PDF)" : "Support de cours (PDF)";
+  pdfs.forEach((p, i) => blocks.push({ kind: "pdf", url: p.url, label: p.titre || (pdfs.length > 1 ? `${pdfBase} ${i + 1}/${pdfs.length}` : pdfBase) }));
   if (x.correctionUrl) blocks.push({ kind: "correction", url: x.correctionUrl });
   if (!blocks.length) blocks.push({ kind: "text", label: "Contenu", text: "Aucun média n'est associé à cet élément pour le moment." });
   openViewer({ title: x.titre, sub: x.description, blocks, seenKey: key, onSeen: refresh });
@@ -832,6 +880,13 @@ function openViewer({ title, sub, blocks, seenKey: sk, onSeen }) {
   const body = h("div", { class: "vbody" });
   blocks.forEach(b => {
     if (b.kind === "text") body.append(h("div", { class: "vblock" }, h("h4", null, ico("pen"), b.label || "Texte"), h("div", { class: "enonce" }, b.text)));
+    else if (b.kind === "meet") {
+      const m = b.meet, stTxt = { soon: "À venir", live: "En cours maintenant", past: "Séance terminée", unknown: "" }[m.status];
+      body.append(h("div", { class: "vblock" }, h("h4", null, ico("mega"), "Séance en direct (Google Meet)"),
+        h("div", { class: "meet" },
+          h("div", { class: "when" }, m.dateTxt || "Date à confirmer", h("small", null, [m.timeTxt, stTxt].filter(Boolean).join(" · "))),
+          extLink(m.href, "Rejoindre Google Meet ", ico("ext")))));
+    }
     else if (b.kind === "video") body.append(h("div", { class: "vblock" }, h("h4", null, ico("video"), b.label || "Vidéo du cours"), frameFor("video", b.url)));
     else if (b.kind === "pdf") body.append(h("div", { class: "vblock" }, h("h4", null, ico("file"), b.label || "Document PDF"), frameFor("pdf", b.url)));
     else if (b.kind === "correction") {
